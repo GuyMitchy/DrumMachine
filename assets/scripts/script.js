@@ -12,6 +12,10 @@ let activeGridIndex = 0;
 let isChangingSounds = false;
 let samples = {};
 let preloadedAudio = {};
+const padSoundLists = {};
+
+// Add this variable at the top of your script file
+const padCurrentIndex = {}
 
 // Add this function to load samples
 async function loadSamples() {
@@ -46,6 +50,26 @@ async function preloadAudioFiles(sampleList) {
     console.log('All samples preloaded');
 }
 
+async function loadPadSoundLists() {
+    const pads = document.querySelectorAll('.pad');
+    for (const pad of pads) {
+        const soundListPath = pad.getAttribute('data-sound-list');
+        console.log(`Attempting to load sound list for ${pad.id} from ${soundListPath}`);
+        try {
+            const response = await fetch(soundListPath);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const soundList = await response.json();
+            padSoundLists[pad.id] = soundList;
+            console.log(`Successfully loaded sound list for ${pad.id}:`, soundList);
+            setInitialPadSound(pad);
+        } catch (error) {
+            console.error(`Error loading sound list for ${pad.id}:`, error);
+        }
+    }
+}
+
 // Modify the playSound function
 function playSound(event) {
     const button = event.target;
@@ -53,39 +77,63 @@ function playSound(event) {
         changePadSound(button);
     } else {
         const soundPath = button.getAttribute('data-sound');
+        console.log(`Attempting to play sound for ${button.id}:`, soundPath);
+        if (!soundPath) {
+            console.error(`No sound path found for ${button.id}`);
+            return;
+        }
         if (preloadedAudio[soundPath]) {
             preloadedAudio[soundPath].currentTime = 0;
-            preloadedAudio[soundPath].play();
+            preloadedAudio[soundPath].play().catch(error => {
+                console.error(`Error playing preloaded audio ${soundPath}:`, error);
+            });
         } else {
             console.warn(`Audio not preloaded: ${soundPath}`);
             const sound = new Audio(soundPath);
-            sound.play();
+            sound.play().catch(error => {
+                console.error(`Error playing audio ${soundPath}:`, error);
+            });
         }
     }
 }
 
 // Add this function to change pad sound
 function changePadSound(pad) {
-    const currentCategory = pad.getAttribute('data-sound').split('/')[2];
-    const allCategories = Object.keys(samples);
-    const currentIndex = allCategories.indexOf(currentCategory);
-    const nextCategory = allCategories[(currentIndex + 1) % allCategories.length];
-    
-    const sampleList = samples[nextCategory];
-    let randomSample;
-    let fullPath;
-    if (Array.isArray(sampleList)) {
-        randomSample = sampleList[Math.floor(Math.random() * sampleList.length)];
-        fullPath = `./samples/${nextCategory}/${randomSample}`;
-    } else {
-        const subCategories = Object.keys(sampleList);
-        const randomSubCategory = subCategories[Math.floor(Math.random() * subCategories.length)];
-        randomSample = sampleList[randomSubCategory][Math.floor(Math.random() * sampleList[randomSubCategory].length)];
-        fullPath = `./samples/${nextCategory}/${randomSubCategory}/${randomSample}`;
+    const soundList = padSoundLists[pad.id];
+    if (!soundList) {
+        console.error(`No sound list found for ${pad.id}`);
+        return;
     }
-    
+
+    const category = Object.keys(soundList)[0];
+    const samples = soundList[category];
+    let nextSample;
+    let fullPath;
+
+    if (Array.isArray(samples)) {
+        if (!(pad.id in padCurrentIndex)) {
+            padCurrentIndex[pad.id] = 0;
+        }
+        padCurrentIndex[pad.id] = (padCurrentIndex[pad.id] + 1) % samples.length;
+        nextSample = samples[padCurrentIndex[pad.id]];
+        fullPath = `./samples/${category}/${nextSample}`;
+    } else {
+        const subCategories = Object.keys(samples);
+        if (!(pad.id in padCurrentIndex)) {
+            padCurrentIndex[pad.id] = { subCategoryIndex: 0, sampleIndex: 0 };
+        }
+        const currentIndex = padCurrentIndex[pad.id];
+        currentIndex.sampleIndex++;
+        if (currentIndex.sampleIndex >= samples[subCategories[currentIndex.subCategoryIndex]].length) {
+            currentIndex.sampleIndex = 0;
+            currentIndex.subCategoryIndex = (currentIndex.subCategoryIndex + 1) % subCategories.length;
+        }
+        nextSample = samples[subCategories[currentIndex.subCategoryIndex]][currentIndex.sampleIndex];
+        fullPath = `./samples/${category}/${subCategories[currentIndex.subCategoryIndex]}/${nextSample}`;
+    }
+
     pad.setAttribute('data-sound', fullPath);
-    pad.textContent = randomSample.replace('.wav', '');
+    pad.textContent = nextSample.replace('.wav', '');
 }
 
 // Add this function to toggle change sounds mode
@@ -275,6 +323,7 @@ function setupEventListeners() {
 // Modify the setupDrumMachine function
 async function setupDrumMachine() {
     await loadSamples();
+    await loadPadSoundLists();
     createSequenceGrids();
     setupEventListeners();
 
@@ -287,3 +336,49 @@ async function setupDrumMachine() {
 
 // Change this line at the end of the file
 window.addEventListener('load', setupDrumMachine);
+
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM content loaded, initializing drum machine...');
+    await loadPadSoundLists();
+    console.log('Pad sound lists loaded');
+    // Any other initialization code...
+});
+
+function setInitialPadSound(pad) {
+    const soundList = padSoundLists[pad.id];
+    if (!soundList) {
+        console.error(`No sound list found for ${pad.id}`);
+        return;
+    }
+
+    const category = Object.keys(soundList)[0];
+    if (!category) {
+        console.error(`No category found in sound list for ${pad.id}`);
+        return;
+    }
+
+    const samples = soundList[category];
+    let initialSample;
+    let fullPath;
+
+    if (Array.isArray(samples) && samples.length > 0) {
+        initialSample = samples[0];
+        fullPath = `./samples/${category}/${initialSample}`;
+    } else if (typeof samples === 'object') {
+        const subCategory = Object.keys(samples)[0];
+        if (subCategory && Array.isArray(samples[subCategory]) && samples[subCategory].length > 0) {
+            initialSample = samples[subCategory][0];
+            fullPath = `./samples/${category}/${subCategory}/${initialSample}`;
+        } else {
+            console.error(`Invalid sample structure for ${pad.id}`);
+            return;
+        }
+    } else {
+        console.error(`Invalid sample structure for ${pad.id}`);
+        return;
+    }
+
+    pad.setAttribute('data-sound', fullPath);
+    pad.textContent = initialSample.replace('.wav', '');
+    console.log(`Set initial sound for ${pad.id}:`, fullPath);
+}
