@@ -1,4 +1,4 @@
-const numSteps = 8;  // Number of steps in our sequence
+const numSteps = 32;  // Number of steps in our sequence
 const numGrids = 4;
 let sequences = Array(numGrids).fill().map(() => Array(9).fill().map(() => Array(numSteps).fill(false)));
 let activeGrids = [true, false, false, false];
@@ -156,6 +156,14 @@ function createSequenceGrids() {
             for (let step = 0; step < numSteps; step++) {
                 const cell = document.createElement('div');
                 cell.className = 'sequence-cell';
+                if (step % 8 === 0) {
+                    cell.classList.add('bar-start');
+                } else if (step % 4 === 0) {
+                    cell.classList.add('beat-start');
+                }
+                if (step % 4 === 0) {  // Changed from step % 2 to step % 4
+                    cell.classList.add('quarter-note');
+                }
                 cell.dataset.grid = gridIndex;
                 cell.dataset.row = i;
                 cell.dataset.step = step;
@@ -254,7 +262,7 @@ function startSequence() {
         while (!activeGrids[activeGridIndex]) {
             activeGridIndex = (activeGridIndex + 1) % numGrids;
         }
-        intervalId = setInterval(playStep, 250); // 250ms = 1/4 second
+        intervalId = setInterval(playStep, 125); // Changed from 250ms to 125ms
     }
 }
 
