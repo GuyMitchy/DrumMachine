@@ -146,10 +146,16 @@ function toggleChangeSoundsMode() {
 // Function to create grid
 function createSequenceGrids() {
     const grids = document.querySelectorAll('.sequence-grid');
-    const pads = document.getElementsByClassName('pad');
+    const padOrder = ['pad3', 'pad2', 'pad1', 'pad6', 'pad5', 'pad4', 'pad9', 'pad8', 'pad7'];
 
     grids.forEach((grid, gridIndex) => {
-        for (let i = 0; i < pads.length; i++) {
+        padOrder.forEach((padId, rowIndex) => {
+            const pad = document.getElementById(padId);
+            if (!pad) {
+                console.warn(`Pad not found for id: ${padId}`);
+                return;
+            }
+
             const row = document.createElement('div');
             row.className = 'sequence-row';
 
@@ -161,17 +167,17 @@ function createSequenceGrids() {
                 } else if (step % 4 === 0) {
                     cell.classList.add('beat-start');
                 }
-                if (step % 4 === 0) {  // Changed from step % 2 to step % 4
+                if (step % 4 === 0) {
                     cell.classList.add('quarter-note');
                 }
                 cell.dataset.grid = gridIndex;
-                cell.dataset.row = i;
+                cell.dataset.row = padOrder.indexOf(padId);
                 cell.dataset.step = step;
                 cell.addEventListener('click', toggleStep);
                 row.appendChild(cell);
             }
             grid.appendChild(row);
-        }
+        });
     });
 
     // Show only the first grid initially
@@ -189,9 +195,10 @@ function toggleStep(event) {
 }
 
 function updateCellDisplay(cell, grid, row, step) {
-    const pads = document.getElementsByClassName('pad');
+    const padOrder = ['pad3', 'pad2', 'pad1', 'pad6', 'pad5', 'pad4', 'pad9', 'pad8', 'pad7'];
+    const pad = document.getElementById(padOrder[row]);
     if (sequences[grid][row][step]) {
-        const padColor = pads[row].dataset.color;
+        const padColor = pad.dataset.color;
         cell.style.backgroundColor = padColor;
         cell.classList.add('active');
     } else {
@@ -201,6 +208,7 @@ function updateCellDisplay(cell, grid, row, step) {
 }
 
 // Function to play a single step of the sequence
+// Function to play a single step of the sequence
 function playStep() {
     // Check if there are any active grids
     if (!activeGrids.some(grid => grid)) {
@@ -208,7 +216,7 @@ function playStep() {
         return;
     }
 
-    const pads = document.getElementsByClassName('pad');
+    const padOrder = ['pad3', 'pad2', 'pad1', 'pad6', 'pad5', 'pad4', 'pad9', 'pad8', 'pad7'];
     
     // Find the next active grid
     while (!activeGrids[activeGridIndex]) {
@@ -216,19 +224,30 @@ function playStep() {
     }
 
     // Play sounds for the current step of the active grid
-    for (let i = 0; i < pads.length; i++) {
-        if (sequences[activeGridIndex][i][currentStep]) {
-            const soundPath = pads[i].getAttribute('data-sound');
-            const sound = new Audio(soundPath);
-            sound.play();
+    padOrder.forEach((padId, index) => {
+        if (sequences[activeGridIndex][index][currentStep]) {
+            const pad = document.getElementById(padId);
+            const soundPath = pad.getAttribute('data-sound');
+            if (preloadedAudio[soundPath]) {
+                const sound = preloadedAudio[soundPath].cloneNode();
+                sound.play().catch(error => {
+                    console.error(`Error playing audio ${soundPath}:`, error);
+                });
+            } else {
+                console.warn(`Audio not preloaded: ${soundPath}`);
+                const sound = new Audio(soundPath);
+                sound.play().catch(error => {
+                    console.error(`Error playing audio ${soundPath}:`, error);
+                });
+            }
         }
-    }
+    });
 
     // Highlight current step in all grids
     document.querySelectorAll('.sequence-cell').forEach(cell => {
         if (parseInt(cell.dataset.step) === currentStep) {
             const row = parseInt(cell.dataset.row);
-            const padColor = pads[row].dataset.color;
+            const padColor = document.getElementById(padOrder[row]).dataset.color;
             cell.style.border = `1px solid ${padColor}`;
         } else {
             cell.style.border = '';

@@ -92,12 +92,65 @@ body {
 }
 
 .grid-selector {
-    margin-right: 5px;
-    padding: 5px 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.grid-selector:hover {
+    background-color: #444;
+}
+
+.grid-selector:active {
+    transform: scale(0.95);
+}
+
+.grid-selector.active {
+    background-color: #4ecdc4;
 }
 
 .grid-toggles label {
-    margin-right: 10px;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+.grid-toggles input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #333;
+    border-radius: 3px;
+    margin-right: 5px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.1s ease;
+}
+
+.grid-toggles input[type="checkbox"]:checked {
+    background-color: #4ecdc4;
+    border-color: #4ecdc4;
+}
+
+.grid-toggles input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .sequence-grids {
@@ -158,12 +211,38 @@ body {
 }
 
 #play-button, #stop-button {
-    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
     margin: 0 10px;
     font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.1s ease;
 }
 
-/* ... (keep other existing styles) ... */
+#play-button:hover, #stop-button:hover {
+    background-color: #444;
+}
+
+#play-button:active, #stop-button:active {
+    transform: scale(0.95);
+}
+
+#play-button {
+    background-color: #4ecdc4;
+}
+
+#stop-button {
+    background-color: #ff6b6b;
+}
+
+/* Container for controls */
+.grid-controls, .grid-toggles, .playback-controls {
+    margin-bottom: 20px;
+}
 
 #change-sounds-btn {
     margin-top: 20px;
