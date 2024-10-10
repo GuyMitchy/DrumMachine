@@ -4,40 +4,146 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #1a1a1a;
+    background-color: #f0f0f0;
     font-family: Arial, sans-serif;
 }
 
+.container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
 .drum-machine {
+    flex: 0 0 auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     background-color: #333;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .pad {
     width: 100px;
     height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #808080;  /* Grey color */
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
+    border: none;
     border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
     cursor: pointer;
     transition: all 0.1s ease;
 }
 
-.pad:hover {
-    background-color: #6a6a6a;  /* Darker grey on hover */
-}
-
 .pad:active {
     transform: scale(0.95);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
+
+#pad1 {
+    background-color: #ff6b6b;
+}
+
+#pad2 {
+    background-color: #4ecdc4;
+}
+
+#pad3 {
+    background-color: #45b7d1;
+}
+
+#pad4 {
+    background-color: #f7b731;
+}
+
+#pad5 {
+    background-color: #5c7cfa;
+}
+
+#pad6 {
+    background-color: #ff8787;
+}
+
+#pad7 {
+    background-color: #69db7c;
+}
+
+#pad8 {
+    background-color: #da77f2;
+}
+
+#pad9 {
+    background-color: #ffa94d;
+}
+
+/* SEQUENCER */
+
+.sequencer {
+   
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.grid-controls, .grid-toggles {
+    margin-bottom: 10px;
+}
+
+.grid-selector {
+    margin-right: 5px;
+    padding: 5px 10px;
+}
+
+.grid-toggles label {
+    margin-right: 10px;
+}
+
+.sequence-grids {
+    position: relative;
+    height: 300px; /* Adjust as needed */
+    margin-bottom: 20px;
+}
+
+.sequence-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    width: 50vw;
+}
+
+#grid-0 {
+    display: block;
+}
+
+.sequence-row {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.sequence-cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.sequence-cell.active {
+    border: 1px solid #000;
+}
+
+.playback-controls {
+  
+    margin-top: 40px;
+}
+
+#play-button, #stop-button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+}
+
+/* ... (keep other existing styles) ... */
