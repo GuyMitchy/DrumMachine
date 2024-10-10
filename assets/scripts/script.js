@@ -8,12 +8,91 @@ let currentStep = 0;
 let intervalId = null;
 let activeGridIndex = 0;
 
-// Function to play sound when a drum pad is clicked
+// Add these new variables
+let isChangingSounds = false;
+let samples = {};
+let preloadedAudio = {};
+
+// Add this function to load samples
+async function loadSamples() {
+    const response = await fetch('./samples/sample_list.json');
+    samples = await response.json();
+    await preloadAudioFiles(samples);
+}
+
+// Add this function to preload audio files
+async function preloadAudioFiles(sampleList) {
+    const preloadPromises = [];
+
+    function preloadCategory(category, path = '') {
+        for (const [key, value] of Object.entries(category)) {
+            if (typeof value === 'string') {
+                const audioPath = `./samples/${path}${value}`;
+                preloadPromises.push(new Promise((resolve) => {
+                    const audio = new Audio(audioPath);
+                    audio.addEventListener('canplaythrough', () => {
+                        preloadedAudio[audioPath] = audio;
+                        resolve();
+                    }, { once: true });
+                }));
+            } else if (typeof value === 'object') {
+                preloadCategory(value, `${path}${key}/`);
+            }
+        }
+    }
+
+    preloadCategory(sampleList);
+    await Promise.all(preloadPromises);
+    console.log('All samples preloaded');
+}
+
+// Modify the playSound function
 function playSound(event) {
     const button = event.target;
-    const soundPath = button.getAttribute('data-sound');
-    const sound = new Audio(soundPath);
-    sound.play();
+    if (isChangingSounds) {
+        changePadSound(button);
+    } else {
+        const soundPath = button.getAttribute('data-sound');
+        if (preloadedAudio[soundPath]) {
+            preloadedAudio[soundPath].currentTime = 0;
+            preloadedAudio[soundPath].play();
+        } else {
+            console.warn(`Audio not preloaded: ${soundPath}`);
+            const sound = new Audio(soundPath);
+            sound.play();
+        }
+    }
+}
+
+// Add this function to change pad sound
+function changePadSound(pad) {
+    const currentCategory = pad.getAttribute('data-sound').split('/')[2];
+    const allCategories = Object.keys(samples);
+    const currentIndex = allCategories.indexOf(currentCategory);
+    const nextCategory = allCategories[(currentIndex + 1) % allCategories.length];
+    
+    const sampleList = samples[nextCategory];
+    let randomSample;
+    let fullPath;
+    if (Array.isArray(sampleList)) {
+        randomSample = sampleList[Math.floor(Math.random() * sampleList.length)];
+        fullPath = `./samples/${nextCategory}/${randomSample}`;
+    } else {
+        const subCategories = Object.keys(sampleList);
+        const randomSubCategory = subCategories[Math.floor(Math.random() * subCategories.length)];
+        randomSample = sampleList[randomSubCategory][Math.floor(Math.random() * sampleList[randomSubCategory].length)];
+        fullPath = `./samples/${nextCategory}/${randomSubCategory}/${randomSample}`;
+    }
+    
+    pad.setAttribute('data-sound', fullPath);
+    pad.textContent = randomSample.replace('.wav', '');
+}
+
+// Add this function to toggle change sounds mode
+function toggleChangeSoundsMode() {
+    isChangingSounds = !isChangingSounds;
+    const changeSoundsBtn = document.getElementById('change-sounds-btn');
+    changeSoundsBtn.textContent = isChangingSounds ? 'Play Sounds' : 'Change Sounds';
 }
 
 // Function to create grid
@@ -94,7 +173,7 @@ function playStep() {
         if (parseInt(cell.dataset.step) === currentStep) {
             const row = parseInt(cell.dataset.row);
             const padColor = pads[row].dataset.color;
-            cell.style.border = `2px solid ${padColor}`;
+            cell.style.border = `1px solid ${padColor}`;
         } else {
             cell.style.border = '';
         }
@@ -188,10 +267,14 @@ function setupEventListeners() {
     document.querySelectorAll('.grid-toggle').forEach(checkbox => {
         checkbox.addEventListener('change', (e) => toggleGridActive(parseInt(e.target.dataset.grid)));
     });
+
+    // Add event listener for the change sounds button
+    document.getElementById('change-sounds-btn').addEventListener('click', toggleChangeSoundsMode);
 }
 
-// Function to set up drum machine
-function setupDrumMachine() {
+// Modify the setupDrumMachine function
+async function setupDrumMachine() {
+    await loadSamples();
     createSequenceGrids();
     setupEventListeners();
 
@@ -202,5 +285,5 @@ function setupDrumMachine() {
     }
 }
 
-// Set up the drum machine when the page finishes loading
-window.onload = setupDrumMachine;
+// Change this line at the end of the file
+window.addEventListener('load', setupDrumMachine);

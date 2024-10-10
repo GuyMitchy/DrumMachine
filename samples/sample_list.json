@@ -1,0 +1,11 @@
+{
+    "Kicks": ["Low Kick.wav", "Pumped Up Kick.wav"],
+    "Snares": ["Snare Snare.wav"],
+    "Hats n Cymbals": {
+      "Closed": ["Punchy Hat.wav"],
+      "Open": ["Damn.wav"],
+      "Cymbals": ["Beat One Cymb.wav"]
+    },
+    "Claps": ["Fye Clap.wav"],
+    "Percs": ["Woah Perc.wav", "Shaker 1.wav"]
+  }

@@ -147,3 +147,26 @@ body {
 }
 
 /* ... (keep other existing styles) ... */
+
+#change-sounds-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#change-sounds-btn:hover {
+    background-color: #45a049;
+}
+
+#change-sounds-btn:active {
+    background-color: #3e8e41;
+}
+
+.sequence-cell.current {
+    border: 2px solid #ff0000; /* Red border for the current step */
+}
