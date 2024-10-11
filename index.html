@@ -5,11 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multi-Grid Drum Machine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
-    <button id="change-sounds-btn">Change Sounds</button>
+<body class="container py-5">
+    <div>
+    <button id="change-sounds-btn">Switch Samples</button>
+    
     <div class="drum-machine">
         <button class="pad" id="pad1" data-sound-list="./samples/fx_list.json" data-color="#ff6b6b">Cowbell</button>
         <button class="pad" id="pad2" data-sound-list="./samples/cymbal_list.json" data-color="#4ecdc4">Cymbal</button>
@@ -21,6 +24,7 @@
         <button class="pad" id="pad8" data-sound-list="./samples/kick2_list.json" data-color="#da77f2">Kick</button>
         <button class="pad" id="pad9" data-sound-list="./samples/open_hat_list.json" data-color="#ffa94d">Open-Hat</button>
     </div>
+</div>
 
     
 
@@ -32,10 +36,22 @@
             <button class="grid-selector" data-grid="3">Grid 4</button>
         </div>
         <div class="grid-toggles">
-            <label><input type="checkbox" class="grid-toggle" data-grid="0" checked> Grid 1 Active</label>
-            <label><input type="checkbox" class="grid-toggle" data-grid="1"> Grid 2 Active</label>
-            <label><input type="checkbox" class="grid-toggle" data-grid="2"> Grid 3 Active</label>
-            <label><input type="checkbox" class="grid-toggle" data-grid="3"> Grid 4 Active</label>
+            <label class="grid-toggle-label">
+                <input type="checkbox" class="grid-toggle" data-grid="0" checked>
+                <span class="grid-toggle-button">Grid 1</span>
+            </label>
+            <label class="grid-toggle-label">
+                <input type="checkbox" class="grid-toggle" data-grid="1">
+                <span class="grid-toggle-button">Grid 2</span>
+            </label>
+            <label class="grid-toggle-label">
+                <input type="checkbox" class="grid-toggle" data-grid="2">
+                <span class="grid-toggle-button">Grid 3</span>
+            </label>
+            <label class="grid-toggle-label">
+                <input type="checkbox" class="grid-toggle" data-grid="3">
+                <span class="grid-toggle-button">Grid 4</span>
+            </label>
         </div>
         <div class="sequence-grids">
             <div class="sequence-grid" id="grid-0"></div>

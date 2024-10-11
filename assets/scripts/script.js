@@ -13,6 +13,7 @@ let isChangingSounds = false;
 let samples = {};
 let preloadedAudio = {};
 const padSoundLists = {};
+const padVolumes = {};
 
 // Add this variable at the top of your script file
 const padCurrentIndex = {}
@@ -83,13 +84,15 @@ function playSound(event) {
             return;
         }
         if (preloadedAudio[soundPath]) {
-            preloadedAudio[soundPath].currentTime = 0;
-            preloadedAudio[soundPath].play().catch(error => {
+            const sound = preloadedAudio[soundPath].cloneNode();
+            sound.volume = padVolumes[button.id] || 1;
+            sound.play().catch(error => {
                 console.error(`Error playing preloaded audio ${soundPath}:`, error);
             });
         } else {
             console.warn(`Audio not preloaded: ${soundPath}`);
             const sound = new Audio(soundPath);
+            sound.volume = padVolumes[button.id] || 1;
             sound.play().catch(error => {
                 console.error(`Error playing audio ${soundPath}:`, error);
             });
@@ -134,6 +137,13 @@ function changePadSound(pad) {
 
     pad.setAttribute('data-sound', fullPath);
     pad.textContent = nextSample.replace('.wav', '');
+
+    // Play the new sound
+    const sound = preloadedAudio[fullPath] || new Audio(fullPath);
+    sound.volume = padVolumes[pad.id] || 1;
+    sound.play().catch(error => {
+        console.error(`Error playing audio ${fullPath}:`, error);
+    });
 }
 
 // Add this function to toggle change sounds mode
@@ -141,6 +151,7 @@ function toggleChangeSoundsMode() {
     isChangingSounds = !isChangingSounds;
     const changeSoundsBtn = document.getElementById('change-sounds-btn');
     changeSoundsBtn.textContent = isChangingSounds ? 'Play Sounds' : 'Change Sounds';
+    console.log('Change sounds mode:', isChangingSounds ? 'ON' : 'OFF');
 }
 
 // Function to create grid
@@ -303,6 +314,15 @@ function switchGrid(gridIndex) {
     });
     currentGrid = gridIndex;
     updateGridDisplay();
+
+    // Update active state of grid selector buttons
+    document.querySelectorAll('.grid-selector').forEach((button, index) => {
+        if (index === gridIndex) {
+            button.classList.add('active');
+        } else {
+            button.classList.remove('active');
+        }
+    });
 }
 
 // Function to update grid display
@@ -336,7 +356,10 @@ function setupEventListeners() {
     document.getElementById('stop-button').addEventListener('click', stopSequence);
 
     document.querySelectorAll('.grid-selector').forEach(button => {
-        button.addEventListener('click', (e) => switchGrid(parseInt(e.target.dataset.grid)));
+        button.addEventListener('click', (e) => {
+            const gridIndex = parseInt(e.target.dataset.grid);
+            switchGrid(gridIndex);
+        });
     });
 
     document.querySelectorAll('.grid-toggle').forEach(checkbox => {
@@ -359,6 +382,9 @@ async function setupDrumMachine() {
     for (let i = 0; i < pads.length; i++) {
         pads[i].addEventListener('click', playSound);
     }
+
+    // Set the first grid as active by default
+    switchGrid(0);
 }
 
 // Change this line at the end of the file

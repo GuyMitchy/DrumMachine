@@ -1,29 +1,33 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
+    
 }
 
 .container {
-    display: flex;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    width: 100%;
+   
+    margin: auto;
+    box-sizing: border-box;
 }
 
 .drum-machine {
-    flex: 0 0 auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     background-color: #333;
     padding: 20px;
     border-radius: 10px;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 600px; /* Adjust this value as needed */
 }
 
 .pad {
@@ -87,7 +91,15 @@ body {
     margin-top: 20px;
 }
 
+.sequencer-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
 .grid-controls, .grid-toggles {
+    display: flex;
+    justify-content: flex-start;
     margin-bottom: 10px;
 }
 
@@ -113,7 +125,8 @@ body {
 }
 
 .grid-selector.active {
-    background-color: #4ecdc4;
+    background-color: #4ecdc4; /* Change this to your preferred active color */
+    color: #333; /* Optional: change text color for better contrast */
 }
 
 .grid-toggles label {
@@ -154,13 +167,15 @@ body {
 }
 
 .sequence-grids {
-    position: relative;
-    height: 300px; /* Adjust as needed */
+    width: 100%;
+    overflow-x: auto;
+    height: 100%; /* Adjust as needed */
     margin-bottom: 20px;
 }
 
 .sequence-grid {
-    position: absolute;
+    min-width: 100%;
+    position: relative;
     top: 0;
     left: 0;
     display: none;
@@ -244,6 +259,8 @@ body {
     margin-bottom: 20px;
 }
 
+
+
 #change-sounds-btn {
     margin-top: 20px;
     padding: 10px 20px;
@@ -265,4 +282,39 @@ body {
 
 .sequence-cell.current {
     border: 2px solid #ff0000; /* Red border for the current step */
+}
+
+.grid-toggles {
+    margin-bottom: 10px;
+}
+
+.grid-toggle-label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.grid-toggle {
+    display: none; /* Hide the actual checkbox */
+}
+
+.grid-toggle-button {
+    display: inline-block;
+    background-color: #555; /* Slightly lighter than the grid selectors */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px; /* Slightly smaller than grid selectors */
+    font-size: 12px; /* Slightly smaller than grid selectors */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.grid-toggle-button:hover {
+    background-color: #666;
+}
+
+.grid-toggle:checked + .grid-toggle-button {
+    background-color: #45b7d1; /* Different color than grid selectors when active */
+    color: #333;
 }
