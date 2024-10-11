@@ -48,39 +48,39 @@ body {
 }
 
 #pad1 {
-    background-color: #ff6b6b;
-}
-
-#pad2 {
-    background-color: #4ecdc4;
-}
-
-#pad3 {
-    background-color: #45b7d1;
-}
-
-#pad4 {
-    background-color: #f7b731;
-}
-
-#pad5 {
     background-color: #5c7cfa;
 }
 
-#pad6 {
+#pad2 {
+    background-color: #ffa94d;
+}
+
+#pad3 {
     background-color: #ff8787;
 }
 
-#pad7 {
-    background-color: #69db7c;
-}
-
-#pad8 {
+#pad4 {
     background-color: #da77f2;
 }
 
+#pad5 {
+    background-color: #69db7c;
+}
+
+#pad6 {
+    background-color: #4ecdc4;
+}
+
+#pad7 {
+    background-color: #f7b731;
+}
+
+#pad8 {
+    background-color: #ff6b6b;
+}
+
 #pad9 {
-    background-color: #ffa94d;
+    background-color: #45b7d1;
 }
 
 /* SEQUENCER */
@@ -115,6 +115,28 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.1s ease;
+}
+
+.grid-selector-label {
+    background-color:  #4ecdc4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.activate-label {
+    background-color:  #45b7d1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .grid-selector:hover {
@@ -356,4 +378,49 @@ body {
     border-radius: 5px;
     
      /* Adjust as needed */
+}
+
+/* Row 1 */
+#label-pad3 {
+    background-color: #ff8787 !important;
+}
+
+/* Row 2 */
+#label-pad2 {
+    background-color: #ffa94d !important;
+}
+
+/* Row 3 */
+#label-pad1 {
+    background-color: #5c7cfa !important;
+}
+
+/* Row 4 */
+#label-pad6 {
+    background-color: #4ecdc4 !important;
+}
+
+/* Row 5 */
+#label-pad5 {
+    background-color: #69db7c !important;
+}
+
+/* Row 6 */
+#label-pad4 {
+    background-color: #da77f2 !important;
+}
+
+/* Row 7 */
+#label-pad9 {
+    background-color: #45b7d1 !important;
+}
+
+/* Row 8 */
+#label-pad8 {
+    background-color: #ff6b6b !important;
+}
+
+/* Row 9 */
+#label-pad7 {
+    background-color: #f7b731 !important;
 }

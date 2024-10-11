@@ -8,6 +8,18 @@ let currentStep = 0;
 let intervalId = null;
 let activeGridIndex = 0;
 
+const padColors = {
+    'pad1': '#5c7cfa',
+    'pad2': '#ffa94d',
+    'pad3': '#ff8787',
+    'pad4': '#da77f2',
+    'pad5': '#69db7c',
+    'pad6': '#4ecdc4',
+    'pad7': '#f7b731',
+    'pad8': '#ff6b6b',
+    'pad9': '#45b7d1'
+};
+
 // Add these new variables
 let isChangingSounds = false;
 let samples = {};
@@ -204,7 +216,7 @@ function createSequenceGrids() {
 function createRowLabels() {
     const rowLabelsContainer = document.querySelector('.row-labels');
     const padOrder = ['pad3', 'pad2', 'pad1', 'pad6', 'pad5', 'pad4', 'pad9', 'pad8', 'pad7'];
-    
+
     padOrder.forEach(padId => {
         const label = document.createElement('div');
         label.className = 'row-label';
@@ -227,10 +239,22 @@ function toggleStep(event) {
 
 function updateCellDisplay(cell, grid, row, step) {
     const padOrder = ['pad3', 'pad2', 'pad1', 'pad6', 'pad5', 'pad4', 'pad9', 'pad8', 'pad7'];
-    const pad = document.getElementById(padOrder[row]);
+    const padColors = {
+        'pad1': '#5c7cfa',
+        'pad2': '#ffa94d',
+        'pad3': '#ff8787',
+        'pad4': '#da77f2',
+        'pad5': '#69db7c',
+        'pad6': '#4ecdc4',
+        'pad7': '#f7b731',
+        'pad8': '#ff6b6b',
+        'pad9': '#45b7d1'
+    };
+
     if (sequences[grid][row][step]) {
-        const padColor = pad.dataset.color;
-        cell.style.backgroundColor = padColor;
+        const padId = padOrder[row];
+        const color = padColors[padId];
+        cell.style.backgroundColor = color;
         cell.classList.add('active');
     } else {
         cell.style.backgroundColor = '';
@@ -248,7 +272,7 @@ function playStep() {
     }
 
     const padOrder = ['pad3', 'pad2', 'pad1', 'pad6', 'pad5', 'pad4', 'pad9', 'pad8', 'pad7'];
-    
+
     // Find the next active grid
     while (!activeGrids[activeGridIndex]) {
         activeGridIndex = (activeGridIndex + 1) % numGrids;
@@ -278,8 +302,9 @@ function playStep() {
     document.querySelectorAll('.sequence-cell').forEach(cell => {
         if (parseInt(cell.dataset.step) === currentStep) {
             const row = parseInt(cell.dataset.row);
-            const padColor = document.getElementById(padOrder[row]).dataset.color;
-            cell.style.border = `1px solid ${padColor}`;
+            const padId = padOrder[row];
+            const padColor = padColors[padId];
+            cell.style.border = `2px solid ${padColor}`;
         } else {
             cell.style.border = '';
         }
@@ -359,7 +384,7 @@ function updateGridDisplay() {
 function toggleGridActive(gridIndex) {
     activeGrids[gridIndex] = !activeGrids[gridIndex];
     document.querySelector(`.grid-toggle[data-grid="${gridIndex}"]`).checked = activeGrids[gridIndex];
-    
+
     // If we're turning off the current active grid, find the next active one
     if (!activeGrids[activeGridIndex]) {
         let nextActiveGrid = (activeGridIndex + 1) % numGrids;
