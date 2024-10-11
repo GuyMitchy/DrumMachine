@@ -1,5 +1,5 @@
 body {
-    margin: 0;
+    
     padding: 0;
     width: 100%;
     min-height: 100vh;
@@ -87,14 +87,15 @@ body {
 
 .sequencer {
    
-    margin-left: 20px;
+    margin-left: 10px;
     margin-top: 20px;
+    flex-grow: 1;
 }
 
 .sequencer-container {
     display: flex;
-    flex-direction: column;
     width: 100%;
+    align-items: flex-start; /* Align items to the top */
 }
 
 .grid-controls, .grid-toggles {
@@ -174,6 +175,8 @@ body {
 }
 
 .sequence-grid {
+    display: flex;
+    flex-direction: column;
     min-width: 100%;
     position: relative;
     top: 0;
@@ -188,14 +191,16 @@ body {
 
 .sequence-row {
     display: flex;
+    height: 35px; /* Match this with your row-label height */
     margin-bottom: 5px;
     align-items: center;
 }
 
 .sequence-cell {
-    width: 20px;
-    height: 30px;
+    width: 30px; /* Adjust as needed */
+    height: 100%;
     border: 1px solid #ccc;
+    box-sizing: border-box;
     margin-right: 1px;
     cursor: pointer;
 }
@@ -262,7 +267,7 @@ body {
 
 
 #change-sounds-btn {
-    margin-top: 20px;
+    margin-top: 80px;
     padding: 10px 20px;
     background-color: #333;
     color: white;
@@ -317,4 +322,38 @@ body {
 .grid-toggle:checked + .grid-toggle-button {
     background-color: #45b7d1; /* Different color than grid selectors when active */
     color: #333;
+}
+
+.sequencer-container {
+    display: flex;
+    width: 100%;
+    align-items: flex-start; /* Align items to the top */
+}
+
+.row-labels {
+    display: flex;
+    flex-direction: column;
+    margin-top: 90px;
+    margin-left: 10px;
+    padding-top: 35px; /* Add padding to align with the first row, adjust as needed */
+}
+
+.row-label {
+    height: 35px; /* Match this with your sequence-row height */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align text to the right */
+    background-color: transparent; /* Make background transparent */
+    color: #333; /* Change text color to match your design */
+    margin-bottom: 5px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 150px;
+    border-radius: 5px;
+    
+     /* Adjust as needed */
 }

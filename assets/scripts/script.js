@@ -138,6 +138,12 @@ function changePadSound(pad) {
     pad.setAttribute('data-sound', fullPath);
     pad.textContent = nextSample.replace('.wav', '');
 
+    // Update the corresponding label
+    const label = document.getElementById(`label-${pad.id}`);
+    if (label) {
+        label.textContent = pad.textContent;
+    }
+
     // Play the new sound
     const sound = preloadedAudio[fullPath] || new Audio(fullPath);
     sound.volume = padVolumes[pad.id] || 1;
@@ -193,6 +199,20 @@ function createSequenceGrids() {
 
     // Show only the first grid initially
     switchGrid(0);
+}
+
+function createRowLabels() {
+    const rowLabelsContainer = document.querySelector('.row-labels');
+    const padOrder = ['pad3', 'pad2', 'pad1', 'pad6', 'pad5', 'pad4', 'pad9', 'pad8', 'pad7'];
+    
+    padOrder.forEach(padId => {
+        const label = document.createElement('div');
+        label.className = 'row-label';
+        label.id = `label-${padId}`;
+        label.textContent = document.getElementById(padId).textContent;
+        label.style.backgroundColor = document.getElementById(padId).dataset.color;
+        rowLabelsContainer.appendChild(label);
+    });
 }
 
 // Function to toggle steps
@@ -374,6 +394,7 @@ function setupEventListeners() {
 async function setupDrumMachine() {
     await loadSamples();
     await loadPadSoundLists();
+    createRowLabels(); // Add this line
     createSequenceGrids();
     setupEventListeners();
 
