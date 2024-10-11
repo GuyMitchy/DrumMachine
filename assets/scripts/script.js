@@ -90,21 +90,22 @@ function playSound(event) {
         changePadSound(button);
     } else {
         const soundPath = button.getAttribute('data-sound');
-        console.log(`Attempting to play sound for ${button.id}:`, soundPath);
         if (!soundPath) {
             console.error(`No sound path found for ${button.id}`);
             return;
         }
+        const volume = padVolumes[button.id] || 1;
         if (preloadedAudio[soundPath]) {
             const sound = preloadedAudio[soundPath].cloneNode();
-            sound.volume = padVolumes[button.id] || 1;
+            console.log(`Pad: ${button.id}, Volume: ${volume}`);
+            sound.volume = volume;
             sound.play().catch(error => {
                 console.error(`Error playing preloaded audio ${soundPath}:`, error);
             });
         } else {
             console.warn(`Audio not preloaded: ${soundPath}`);
             const sound = new Audio(soundPath);
-            sound.volume = padVolumes[button.id] || 1;
+            sound.volume = volume;
             sound.play().catch(error => {
                 console.error(`Error playing audio ${soundPath}:`, error);
             });
@@ -415,16 +416,129 @@ function setupEventListeners() {
     document.getElementById('change-sounds-btn').addEventListener('click', toggleChangeSoundsMode);
 }
 
-// Modify the setupDrumMachine function
+// SETUP VOLUME KNOBS
+
+// function easeInOutQuad(t) {
+//     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+// }
+
+// let knobAnimationFrame = null;
+
+// function updateKnobRotation(knob, value) {
+//     const targetRotation = (value / 100) * 270 - 135;
+//     const indicator = knob.nextElementSibling;
+    
+//     let currentRotation = parseFloat(indicator.dataset.currentRotation || "0");
+    
+//     function animateRotation() {
+//         if (Math.abs(targetRotation - currentRotation) < 0.1) {
+//             currentRotation = targetRotation;
+//             indicator.style.transform = `rotate(${currentRotation}deg)`;
+//             indicator.dataset.currentRotation = currentRotation;
+//             knobAnimationFrame = null;
+//             return;
+//         }
+        
+//         currentRotation += (targetRotation - currentRotation) * 0.1;
+//         const easedRotation = easeInOutQuad(currentRotation / 270) * 270;
+        
+//         indicator.style.transform = `rotate(${easedRotation}deg)`;
+//         indicator.dataset.currentRotation = currentRotation;
+        
+//         knobAnimationFrame = requestAnimationFrame(animateRotation);
+//     }
+    
+//     if (knobAnimationFrame) {
+//         cancelAnimationFrame(knobAnimationFrame);
+//     }
+//     knobAnimationFrame = requestAnimationFrame(animateRotation);
+// }
+
+function setupVolumeKnobs() {
+    const volumeKnobs = document.querySelectorAll('.volume-knob');
+    volumeKnobs.forEach(knob => {
+        const indicator = knob.nextElementSibling;
+        let isDragging = false;
+        let startY, startValue;
+
+        function setVolume(newValue) {
+            newValue = Math.min(100, Math.max(0, newValue));
+            knob.value = newValue;
+            const padId = knob.id.replace('volume-', '');
+            const volume = Math.max(0.0001, newValue / 100);
+            padVolumes[padId] = volume;
+            
+            const rotation = (newValue / 100) * 270 - 135;
+            indicator.style.transform = `rotate(${rotation}deg)`;
+            
+            console.log(`Pad: ${padId}, Raw value: ${newValue}, Volume: ${volume}`);
+        }
+
+        function handleClick(e) {
+            const knobRect = knob.getBoundingClientRect();
+            const knobCenter = {
+                x: knobRect.left + knobRect.width / 2,
+                y: knobRect.top + knobRect.height / 2
+            };
+            const clickPos = {
+                x: e.clientX,
+                y: e.clientY
+            };
+            
+            let angle = Math.atan2(clickPos.y - knobCenter.y, clickPos.x - knobCenter.x);
+            angle = (angle + Math.PI * 6/4) % (Math.PI * 2);
+            
+            let newValue = (angle / (Math.PI * 3/2)) * 100;
+            setVolume(newValue);
+        }
+
+        function handleDragStart(e) {
+            isDragging = true;
+            startY = e.clientY;
+            startValue = parseFloat(knob.value);
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', handleDragEnd);
+        }
+
+        function handleDrag(e) {
+            if (!isDragging) return;
+            const deltaY = startY - e.clientY;
+            const deltaValue = (deltaY / 100) * 100; // 100px movement = full range
+            setVolume(startValue + deltaValue);
+        }
+
+        function handleDragEnd() {
+            isDragging = false;
+            document.removeEventListener('mousemove', handleDrag);
+            document.removeEventListener('mouseup', handleDragEnd);
+        }
+
+        knob.addEventListener('mousedown', (e) => {
+            handleClick(e);
+            handleDragStart(e);
+        });
+
+        // Initialize knob position
+        setVolume(parseFloat(knob.value) || 100);
+    });
+}
+
 async function setupDrumMachine() {
     await loadSamples();
     await loadPadSoundLists();
-    createRowLabels(); // Add this line
+    createRowLabels();
     createSequenceGrids();
     setupEventListeners();
 
-    // Add event listeners to drum pads
+    // Initialize padVolumes
     const pads = document.getElementsByClassName('pad');
+    for (let i = 0; i < pads.length; i++) {
+        padVolumes[pads[i].id] = 1; // Set initial volume to maximum
+    }
+
+    setupVolumeKnobs();
+
+    // Add event listeners to drum pads
     for (let i = 0; i < pads.length; i++) {
         pads[i].addEventListener('click', playSound);
     }
@@ -433,8 +547,8 @@ async function setupDrumMachine() {
     switchGrid(0);
 }
 
-// Change this line at the end of the file
-window.addEventListener('load', setupDrumMachine);
+
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM content loaded, initializing drum machine...');
@@ -481,3 +595,6 @@ function setInitialPadSound(pad) {
     pad.textContent = initialSample.replace('.wav', '');
     console.log(`Set initial sound for ${pad.id}:`, fullPath);
 }
+
+window.addEventListener('load', setupDrumMachine);
+

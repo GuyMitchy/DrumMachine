@@ -3,7 +3,7 @@ body {
     padding: 0;
     width: 100%;
     min-height: 100vh;
-    display: flex;
+    display: flex;     /* REMOVE FLEX FOR BOOTSTRAP COLUMNS TO WORK IF YOU DECIDE TO GO FOR 2 ROWS */
     justify-content: flex-start;
     align-items: flex-start;
     background-color: #f0f0f0;
@@ -23,9 +23,9 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     background-color: #333;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 30px;
+    padding: 15px;
+    border-radius: 5px;
+   
     width: 100%;
     max-width: 600px; /* Adjust this value as needed */
 }
@@ -349,7 +349,7 @@ body {
 .sequencer-container {
     display: flex;
     width: 100%;
-    align-items: flex-start; /* Align items to the top */
+    align-items: flex-start;
 }
 
 .row-labels {
@@ -357,7 +357,7 @@ body {
     flex-direction: column;
     margin-top: 90px;
     margin-left: 10px;
-    padding-top: 35px; /* Add padding to align with the first row, adjust as needed */
+    padding-top: 42px; /* Add padding to align with the first row, adjust as needed */
 }
 
 .row-label {
@@ -424,3 +424,68 @@ body {
 #label-pad7 {
     background-color: #f7b731 !important;
 }
+
+.volume-knobs {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    margin-top: 129px;
+    
+    
+}
+
+.knob-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0; /* Adjust this value if needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.volume-knob {
+   
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    transform: rotate(-135deg);
+    opacity: 0;
+    cursor: pointer;
+    z-index: 100;
+}
+
+
+.knob-indicator {
+    position: absolute;
+    top: -50;
+    left: 0;
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    background-color: var(--knob-color);
+    pointer-events: none;
+}
+
+.knob-indicator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3px;
+    height: 50%;
+    background: white;
+    transform: translateX(-50%) rotate(135deg);
+    transform-origin: top center;
+}
+
+/* Specific colors for each volume knob */
+#volume-pad3 + .knob-indicator { --knob-color: #ff8787; }
+#volume-pad2 + .knob-indicator { --knob-color: #ffa94d; }
+#volume-pad1 + .knob-indicator { --knob-color: #5c7cfa; }
+#volume-pad6 + .knob-indicator { --knob-color: #4ecdc4; }
+#volume-pad5 + .knob-indicator { --knob-color: #69db7c; }
+#volume-pad4 + .knob-indicator { --knob-color: #da77f2; }
+#volume-pad9 + .knob-indicator { --knob-color: #45b7d1; }
+#volume-pad8 + .knob-indicator { --knob-color: #ff6b6b; }
+#volume-pad7 + .knob-indicator { --knob-color: #f7b731; }
