@@ -247,17 +247,17 @@ body {
     padding-bottom: 10px;
 }
 
-.playback-controls {
+/* .playback-controls {
   
-    margin-top: 40px;
-}
+  
+} */
 
 #play-button, #stop-button {
     background-color: #333;
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 12px 20px;
+    padding: 5px 10px;
     margin: 0 10px;
     font-size: 16px;
     font-weight: bold;
@@ -356,7 +356,6 @@ body {
     display: flex;
     flex-direction: column;
     margin-top: 90px;
-    margin-left: 10px;
     padding-top: 42px; /* Add padding to align with the first row, adjust as needed */
 }
 
@@ -374,7 +373,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 150px;
+    width: 180px;
     border-radius: 5px;
     
      /* Adjust as needed */
@@ -477,6 +476,29 @@ body {
     background: white;
     transform: translateX(-50%) rotate(135deg);
     transform-origin: top center;
+}
+
+/* CLEAR GRID BUTTON */
+
+.control-btn {
+    background-color: #fdb56d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-left: 470px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.control-btn:hover {
+    background-color: #d32f2f;
+}
+
+.control-btn:active {
+    transform: scale(0.95);
 }
 
 /* Specific colors for each volume knob */

@@ -84,20 +84,31 @@ async function loadPadSoundLists() {
 }
 
 // Modify the playSound function
-function playSound(event) {
-    const button = event.target;
+function playSound(input, overrideVolume = null) {
+    let button, padId;
+    if (typeof input === 'string') {
+        padId = input;
+        button = document.getElementById(padId);
+    } else if (input instanceof Event) {
+        button = input.target;
+        padId = button.id;
+    } else {
+        console.error('Invalid input for playSound function');
+        return;
+    }
+
     if (isChangingSounds) {
         changePadSound(button);
     } else {
         const soundPath = button.getAttribute('data-sound');
         if (!soundPath) {
-            console.error(`No sound path found for ${button.id}`);
+            console.error(`No sound path found for ${padId}`);
             return;
         }
-        const volume = padVolumes[button.id] || 1;
+        const volume = overrideVolume !== null ? overrideVolume : (padVolumes[padId] || 1);
         if (preloadedAudio[soundPath]) {
             const sound = preloadedAudio[soundPath].cloneNode();
-            console.log(`Pad: ${button.id}, Volume: ${volume}`);
+            console.log(`Pad: ${padId}, Volume: ${volume}`);
             sound.volume = volume;
             sound.play().catch(error => {
                 console.error(`Error playing preloaded audio ${soundPath}:`, error);
@@ -282,20 +293,7 @@ function playStep() {
     // Play sounds for the current step of the active grid
     padOrder.forEach((padId, index) => {
         if (sequences[activeGridIndex][index][currentStep]) {
-            const pad = document.getElementById(padId);
-            const soundPath = pad.getAttribute('data-sound');
-            if (preloadedAudio[soundPath]) {
-                const sound = preloadedAudio[soundPath].cloneNode();
-                sound.play().catch(error => {
-                    console.error(`Error playing audio ${soundPath}:`, error);
-                });
-            } else {
-                console.warn(`Audio not preloaded: ${soundPath}`);
-                const sound = new Audio(soundPath);
-                sound.play().catch(error => {
-                    console.error(`Error playing audio ${soundPath}:`, error);
-                });
-            }
+            playSound(padId);
         }
     });
 
@@ -396,6 +394,18 @@ function toggleGridActive(gridIndex) {
     }
 }
 
+function clearCurrentGrid() {
+    sequences[currentGrid] = Array(9).fill().map(() => Array(numSteps).fill(false));
+    const grid = document.getElementById(`grid-${currentGrid}`);
+    const cells = grid.querySelectorAll('.sequence-cell');
+    cells.forEach((cell) => {
+        const row = parseInt(cell.dataset.row);
+        const step = parseInt(cell.dataset.step);
+        updateCellDisplay(cell, currentGrid, row, step);
+    });
+}
+
+
 // Function to set up event listeners
 function setupEventListeners() {
     document.getElementById('play-button').addEventListener('click', startSequence);
@@ -414,6 +424,9 @@ function setupEventListeners() {
 
     // Add event listener for the change sounds button
     document.getElementById('change-sounds-btn').addEventListener('click', toggleChangeSoundsMode);
+
+    const clearGridBtn = document.getElementById('clear-grid-btn');
+    clearGridBtn.addEventListener('click', clearCurrentGrid);
 }
 
 // SETUP VOLUME KNOBS
