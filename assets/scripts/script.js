@@ -180,7 +180,7 @@ function changePadSound(pad) {
 function toggleChangeSoundsMode() {
     isChangingSounds = !isChangingSounds;
     const changeSoundsBtn = document.getElementById('change-sounds-btn');
-    changeSoundsBtn.textContent = isChangingSounds ? 'Play Sounds' : 'Change Sounds';
+    changeSoundsBtn.textContent = isChangingSounds ? 'Play' : 'Switch Samples';
     console.log('Change sounds mode:', isChangingSounds ? 'ON' : 'OFF');
 }
 

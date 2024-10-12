@@ -6,7 +6,7 @@ body {
     display: flex;     /* REMOVE FLEX FOR BOOTSTRAP COLUMNS TO WORK IF YOU DECIDE TO GO FOR 2 ROWS */
     justify-content: flex-start;
     align-items: flex-start;
-    background-color: #f0f0f0;
+    background-color: #ffebca7c;
     font-family: Arial, sans-serif;
     
 }
@@ -18,13 +18,18 @@ body {
     box-sizing: border-box;
 }
 
+.drum-column {
+    margin-top: 10px;
+}
+
 .drum-machine {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    background-color: #333;
+    background-color: #fbdeb3fe;
     padding: 15px;
     border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
    
     width: 100%;
     max-width: 600px; /* Adjust this value as needed */
@@ -291,8 +296,8 @@ body {
 #change-sounds-btn {
     margin-top: 80px;
     padding: 10px 20px;
-    background-color: #333;
-    color: white;
+    background-color: #fbdeb3fe;
+    color: rgb(0, 0, 0);
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -300,11 +305,11 @@ body {
 }
 
 #change-sounds-btn:hover {
-    background-color: #45a049;
+    background-color: #ffd390fe;
 }
 
 #change-sounds-btn:active {
-    background-color: #3e8e41;
+    background-color: #ffd390fe;
 }
 
 .sequence-cell.current {
