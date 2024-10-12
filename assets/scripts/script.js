@@ -7,6 +7,7 @@ let isPlaying = false;
 let currentStep = 0;
 let intervalId = null;
 let activeGridIndex = 0;
+let currentTempo = 120; // Default tempo in BPM
 
 const padColors = {
     'pad1': '#5c7cfa',
@@ -63,6 +64,19 @@ async function preloadAudioFiles(sampleList) {
     console.log('All samples preloaded');
 }
 
+function calculateIntervalFromBPM(bpm) {
+    return 60000 / bpm / 4; // Assuming 16th notes (4 steps per beat)
+}
+
+function updateTempo(newTempo) {
+    currentTempo = newTempo;
+    document.getElementById('tempo-display').textContent = newTempo;
+    if (isPlaying) {
+        stopSequence();
+        startSequence();
+    }
+}
+
 async function loadPadSoundLists() {
     const pads = document.querySelectorAll('.pad');
     for (const pad of pads) {
@@ -84,7 +98,7 @@ async function loadPadSoundLists() {
 }
 
 // Modify the playSound function
-function playSound(input, overrideVolume = null) {
+function playSound(input, isSequencerTrigger = false) {
     let button, padId;
     if (typeof input === 'string') {
         padId = input;
@@ -97,7 +111,7 @@ function playSound(input, overrideVolume = null) {
         return;
     }
 
-    if (isChangingSounds) {
+    if (isChangingSounds && !isSequencerTrigger) {
         changePadSound(button);
     } else {
         const soundPath = button.getAttribute('data-sound');
@@ -105,7 +119,7 @@ function playSound(input, overrideVolume = null) {
             console.error(`No sound path found for ${padId}`);
             return;
         }
-        const volume = overrideVolume !== null ? overrideVolume : (padVolumes[padId] || 1);
+        const volume = padVolumes[padId] || 1;
         if (preloadedAudio[soundPath]) {
             const sound = preloadedAudio[soundPath].cloneNode();
             console.log(`Pad: ${padId}, Volume: ${volume}`);
@@ -293,7 +307,7 @@ function playStep() {
     // Play sounds for the current step of the active grid
     padOrder.forEach((padId, index) => {
         if (sequences[activeGridIndex][index][currentStep]) {
-            playSound(padId);
+            playSound(padId, true);  // Pass true for isSequencerTrigger
         }
     });
 
@@ -333,10 +347,8 @@ function startSequence() {
         currentStep = 0;
         activeGridIndex = 0;
         // Find the first active grid
-        while (!activeGrids[activeGridIndex]) {
-            activeGridIndex = (activeGridIndex + 1) % numGrids;
-        }
-        intervalId = setInterval(playStep, 125); // Changed from 250ms to 125ms
+        const intervalTime = calculateIntervalFromBPM(currentTempo);
+    intervalId = setInterval(playStep, intervalTime);
     }
 }
 
@@ -427,7 +439,13 @@ function setupEventListeners() {
 
     const clearGridBtn = document.getElementById('clear-grid-btn');
     clearGridBtn.addEventListener('click', clearCurrentGrid);
+
+       const tempoSlider = document.getElementById('tempo-slider');
+    tempoSlider.addEventListener('input', (e) => {
+        updateTempo(parseInt(e.target.value));
+    });
 }
+
 
 // SETUP VOLUME KNOBS
 
@@ -539,6 +557,7 @@ function setupVolumeKnobs() {
 async function setupDrumMachine() {
     await loadSamples();
     await loadPadSoundLists();
+    await setInitialPadSounds(); // New function to set and preload initial sounds
     createRowLabels();
     createSequenceGrids();
     setupEventListeners();
@@ -558,6 +577,56 @@ async function setupDrumMachine() {
 
     // Set the first grid as active by default
     switchGrid(0);
+}
+
+async function setInitialPadSounds() {
+    const pads = document.getElementsByClassName('pad');
+    const preloadPromises = [];
+
+    for (let i = 0; i < pads.length; i++) {
+        const pad = pads[i];
+        const soundList = padSoundLists[pad.id];
+        if (!soundList) {
+            console.error(`No sound list found for ${pad.id}`);
+            continue;
+        }
+
+        const category = Object.keys(soundList)[0];
+        const samples = soundList[category];
+        let initialSample, fullPath;
+
+        if (Array.isArray(samples)) {
+            initialSample = samples[0];
+            fullPath = `./samples/${category}/${initialSample}`;
+        } else {
+            const subCategory = Object.keys(samples)[0];
+            initialSample = samples[subCategory][0];
+            fullPath = `./samples/${category}/${subCategory}/${initialSample}`;
+        }
+
+        pad.setAttribute('data-sound', fullPath);
+        pad.textContent = initialSample.replace('.wav', '');
+
+        // Preload the initial sound
+        preloadPromises.push(preloadAudio(fullPath));
+    }
+
+    await Promise.all(preloadPromises);
+    console.log('All initial pad sounds preloaded');
+}
+
+async function preloadAudio(audioPath) {
+    return new Promise((resolve, reject) => {
+        const audio = new Audio(audioPath);
+        audio.addEventListener('canplaythrough', () => {
+            preloadedAudio[audioPath] = audio;
+            resolve();
+        }, { once: true });
+        audio.addEventListener('error', (error) => {
+            console.error(`Error preloading audio ${audioPath}:`, error);
+            reject(error);
+        });
+    });
 }
 
 

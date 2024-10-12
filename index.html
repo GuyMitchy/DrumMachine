@@ -40,6 +40,48 @@
     <div class="row">
         <div class="col-12">
             <div class="sequencer-container">
+
+                <!-- PAN KNOBS -->
+
+                <div class="volume-knobs">
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad3">
+                        <div class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad2">
+                        <div class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad1">
+                        <div class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad6">
+                        <div class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad5">
+                        <div class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad4">
+                        <div class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad9">
+                        <div class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad8">
+                        <div class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-container">
+                        <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad7">
+                        <div class="knob-indicator"></div>
+                    </div>
+                </div>
+                
                 <div class="volume-knobs">
                     <div class="knob-container">
                         <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad3">
@@ -94,19 +136,19 @@
                         <label class="grid-toggle-label">
                             <div class="activate-label">Activate Grid</div>
                             <input type="checkbox" class="grid-toggle" data-grid="0" checked>
-                            <span class="grid-toggle-button">Grid 1 Active</span>
+                            <span class="grid-toggle-button">1</span>
                         </label>
                         <label class="grid-toggle-label">
                             <input type="checkbox" class="grid-toggle" data-grid="1">
-                            <span class="grid-toggle-button">Grid 2 Active</span>
+                            <span class="grid-toggle-button">2</span>
                         </label>
                         <label class="grid-toggle-label">
                             <input type="checkbox" class="grid-toggle" data-grid="2">
-                            <span class="grid-toggle-button">Grid 3 Active</span>
+                            <span class="grid-toggle-button">3</span>
                         </label>
                         <label class="grid-toggle-label">
                             <input type="checkbox" class="grid-toggle" data-grid="3">
-                            <span class="grid-toggle-button">Grid 4 Active</span>
+                            <span class="grid-toggle-button">4</span>
                         </label>
                     </div>
                     <div class="sequence-grids">
@@ -116,9 +158,16 @@
                         <div class="sequence-grid" id="grid-3"></div>
                     </div>
                     <div class="playback-controls">
+                        <div class="tempo-control">
+                            <label for="tempo-slider" class="tempo-label">Tempo: <span id="tempo-display">120</span> BPM</label>
+                            <input type="range" id="tempo-slider" min="60" max="240" value="120" class="styled-slider">
+                        </div>
+                        <button id="clear-grid-btn" class="control-btn">Clear Grid</button>
                         <button id="play-button">Play</button>
                         <button id="stop-button">Stop</button>
-                        <button id="clear-grid-btn" class="control-btn">Clear Grid</button>
+                        
+                        
+                        
                     </div>
                     
                     </div>
