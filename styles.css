@@ -463,6 +463,78 @@ body {
     z-index: 100;
 }
 
+/* PAN KNOBS */
+
+.pan-knobs {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    margin-top: 129px;
+    
+    
+}
+
+.pan-knob-container {
+    position: relative;
+    width: 20px;  /* Reduced from 40px */
+    height: 20px; /* Reduced from 40px */
+    margin-bottom: 5px; /* Add a small margin to separate knobs vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px;
+    margin-top: 7px;
+ 
+}
+
+.pan-knob {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    transform: rotate(-90deg);
+    opacity: 0;
+    cursor: pointer;
+    z-index: 100;
+}
+
+
+/* PITCH KNOBS */
+
+.pitch-knobs {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    margin-top: 129px;
+    
+    
+}
+
+.pitch-knob-container {
+    position: relative;
+    width: 20px;  /* Reduced from 40px */
+    height: 20px; /* Reduced from 40px */
+    margin-bottom: 5px; /* Add a small margin to separate knobs vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px;
+    margin-top: 7px;
+ 
+}
+
+.pitch-knob {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    transform: rotate(-135deg);
+    opacity: 0;
+    cursor: pointer;
+    z-index: 100;
+}
+
+
 .knob-indicator {
     position: absolute;
     top: 0;
@@ -571,16 +643,16 @@ body {
     transform: scale(0.95);
 }
 
-/* Specific colors for each volume knob */
-#volume-pad3 + .knob-indicator { --knob-color: #ff8787; }
-#volume-pad2 + .knob-indicator { --knob-color: #ffa94d; }
-#volume-pad1 + .knob-indicator { --knob-color: #5c7cfa; }
-#volume-pad6 + .knob-indicator { --knob-color: #4ecdc4; }
-#volume-pad5 + .knob-indicator { --knob-color: #69db7c; }
-#volume-pad4 + .knob-indicator { --knob-color: #da77f2; }
-#volume-pad9 + .knob-indicator { --knob-color: #45b7d1; }
-#volume-pad8 + .knob-indicator { --knob-color: #ff6b6b; }
-#volume-pad7 + .knob-indicator { --knob-color: #f7b731; }
+/* Unified styling for all knob types (volume, pitch, pan) for each pad */
+[id$="-pad1"] + .knob-indicator { --knob-color: #5c7cfa; }
+[id$="-pad2"] + .knob-indicator { --knob-color: #ffa94d; }
+[id$="-pad3"] + .knob-indicator { --knob-color: #ff8787; }
+[id$="-pad4"] + .knob-indicator { --knob-color: #da77f2; }
+[id$="-pad5"] + .knob-indicator { --knob-color: #69db7c; }
+[id$="-pad6"] + .knob-indicator { --knob-color: #4ecdc4; }
+[id$="-pad7"] + .knob-indicator { --knob-color: #f7b731; }
+[id$="-pad8"] + .knob-indicator { --knob-color: #ff6b6b; }
+[id$="-pad9"] + .knob-indicator { --knob-color: #45b7d1; }
 
 
 

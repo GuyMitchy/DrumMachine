@@ -27,9 +27,15 @@ let samples = {};
 let preloadedAudio = {};
 const padSoundLists = {};
 const padVolumes = {};
+const padPitches = {};
+const padPans = {};
+
 
 // Add this variable at the top of your script file
 const padCurrentIndex = {}
+
+// Add this at the top of your file
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 // Add this function to load samples
 async function loadSamples() {
@@ -46,13 +52,7 @@ async function preloadAudioFiles(sampleList) {
         for (const [key, value] of Object.entries(category)) {
             if (typeof value === 'string') {
                 const audioPath = `./samples/${path}${value}`;
-                preloadPromises.push(new Promise((resolve) => {
-                    const audio = new Audio(audioPath);
-                    audio.addEventListener('canplaythrough', () => {
-                        preloadedAudio[audioPath] = audio;
-                        resolve();
-                    }, { once: true });
-                }));
+                preloadPromises.push(preloadAudio(audioPath));
             } else if (typeof value === 'object') {
                 preloadCategory(value, `${path}${key}/`);
             }
@@ -62,6 +62,23 @@ async function preloadAudioFiles(sampleList) {
     preloadCategory(sampleList);
     await Promise.all(preloadPromises);
     console.log('All samples preloaded');
+}
+
+// Modify the preloadAudio function
+async function preloadAudio(audioPath) {
+    return new Promise((resolve, reject) => {
+        fetch(audioPath)
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+            .then(audioBuffer => {
+                preloadedAudio[audioPath] = audioBuffer;
+                resolve();
+            })
+            .catch(error => {
+                console.error(`Error preloading audio ${audioPath}:`, error);
+                reject(error);
+            });
+    });
 }
 
 function calculateIntervalFromBPM(bpm) {
@@ -98,7 +115,7 @@ async function loadPadSoundLists() {
 }
 
 // Modify the playSound function
-function playSound(input, isSequencerTrigger = false) {
+async function playSound(input, isSequencerTrigger = false) {
     let button, padId;
     if (typeof input === 'string') {
         padId = input;
@@ -112,34 +129,44 @@ function playSound(input, isSequencerTrigger = false) {
     }
 
     if (isChangingSounds && !isSequencerTrigger) {
-        changePadSound(button);
+        await changePadSound(button);
+    }
+
+    const soundPath = button.getAttribute('data-sound');
+    if (!soundPath) {
+        console.error(`No sound path found for ${padId}`);
+        return;
+    }
+    const volume = padVolumes[padId] || 1;
+    const pitch = padPitches[padId] || 1;
+    const pan = padPans[padId] || 0;
+
+    if (preloadedAudio[soundPath]) {
+        const source = audioContext.createBufferSource();
+        source.buffer = preloadedAudio[soundPath];
+        
+        const gainNode = audioContext.createGain();
+        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+
+        const panNode = audioContext.createStereoPanner();
+        panNode.pan.setValueAtTime(pan, audioContext.currentTime);
+
+        source.playbackRate.setValueAtTime(pitch, audioContext.currentTime);
+
+        source.connect(gainNode);
+        gainNode.connect(panNode);
+        panNode.connect(audioContext.destination);
+
+        source.start();
+        console.log(`Pad: ${padId}, Volume: ${volume}, Pitch: ${pitch}, Pan: ${pan}`);
     } else {
-        const soundPath = button.getAttribute('data-sound');
-        if (!soundPath) {
-            console.error(`No sound path found for ${padId}`);
-            return;
-        }
-        const volume = padVolumes[padId] || 1;
-        if (preloadedAudio[soundPath]) {
-            const sound = preloadedAudio[soundPath].cloneNode();
-            console.log(`Pad: ${padId}, Volume: ${volume}`);
-            sound.volume = volume;
-            sound.play().catch(error => {
-                console.error(`Error playing preloaded audio ${soundPath}:`, error);
-            });
-        } else {
-            console.warn(`Audio not preloaded: ${soundPath}`);
-            const sound = new Audio(soundPath);
-            sound.volume = volume;
-            sound.play().catch(error => {
-                console.error(`Error playing audio ${soundPath}:`, error);
-            });
-        }
+        console.warn(`Audio not preloaded: ${soundPath}`);
+        // Optionally, you could add a fallback method here to load and play the sound
     }
 }
 
 // Add this function to change pad sound
-function changePadSound(pad) {
+async function changePadSound(pad) {
     const soundList = padSoundLists[pad.id];
     if (!soundList) {
         console.error(`No sound list found for ${pad.id}`);
@@ -153,7 +180,7 @@ function changePadSound(pad) {
 
     if (Array.isArray(samples)) {
         if (!(pad.id in padCurrentIndex)) {
-            padCurrentIndex[pad.id] = 0;
+            padCurrentIndex[pad.id] = 0; // Start at -1 so first increment sets it to 0
         }
         padCurrentIndex[pad.id] = (padCurrentIndex[pad.id] + 1) % samples.length;
         nextSample = samples[padCurrentIndex[pad.id]];
@@ -161,7 +188,7 @@ function changePadSound(pad) {
     } else {
         const subCategories = Object.keys(samples);
         if (!(pad.id in padCurrentIndex)) {
-            padCurrentIndex[pad.id] = { subCategoryIndex: 0, sampleIndex: 0 };
+            padCurrentIndex[pad.id] = { subCategoryIndex: 0, sampleIndex: 0 }; // Start sampleIndex at -1
         }
         const currentIndex = padCurrentIndex[pad.id];
         currentIndex.sampleIndex++;
@@ -182,12 +209,16 @@ function changePadSound(pad) {
         label.textContent = pad.textContent;
     }
 
-    // Play the new sound
-    const sound = preloadedAudio[fullPath] || new Audio(fullPath);
-    sound.volume = padVolumes[pad.id] || 1;
-    sound.play().catch(error => {
-        console.error(`Error playing audio ${fullPath}:`, error);
-    });
+    // Preload the new sound
+    try {
+        await preloadAudio(fullPath);
+        console.log(`New sound preloaded for ${pad.id}: ${fullPath}`);
+    } catch (error) {
+        console.error(`Failed to preload new sound for ${pad.id}: ${fullPath}`, error);
+    }
+
+    // // Play the new sound - This causing infinite loop
+    // playSound(pad.id);
 }
 
 // Add this function to toggle change sounds mode
@@ -485,74 +516,198 @@ function setupEventListeners() {
 //     knobAnimationFrame = requestAnimationFrame(animateRotation);
 // }
 
+
+
 function setupVolumeKnobs() {
     const volumeKnobs = document.querySelectorAll('.volume-knob');
     volumeKnobs.forEach(knob => {
-        const indicator = knob.nextElementSibling;
-        let isDragging = false;
-        let startY, startValue;
-
-        function setVolume(newValue) {
-            newValue = Math.min(100, Math.max(0, newValue));
-            knob.value = newValue;
-            const padId = knob.id.replace('volume-', '');
-            const volume = Math.max(0.0001, newValue / 100);
-            padVolumes[padId] = volume;
-            
-            const rotation = (newValue / 100) * 270 - 135;
-            indicator.style.transform = `rotate(${rotation}deg)`;
-            
-            console.log(`Pad: ${padId}, Raw value: ${newValue}, Volume: ${volume}`);
-        }
-
-        function handleClick(e) {
-            const knobRect = knob.getBoundingClientRect();
-            const knobCenter = {
-                x: knobRect.left + knobRect.width / 2,
-                y: knobRect.top + knobRect.height / 2
-            };
-            const clickPos = {
-                x: e.clientX,
-                y: e.clientY
-            };
-            
-            let angle = Math.atan2(clickPos.y - knobCenter.y, clickPos.x - knobCenter.x);
-            angle = (angle + Math.PI * 6/4) % (Math.PI * 2);
-            
-            let newValue = (angle / (Math.PI * 3/2)) * 100;
-            setVolume(newValue);
-        }
-
-        function handleDragStart(e) {
-            isDragging = true;
-            startY = e.clientY;
-            startValue = parseFloat(knob.value);
-            document.addEventListener('mousemove', handleDrag);
-            document.addEventListener('mouseup', handleDragEnd);
-        }
-
-        function handleDrag(e) {
-            if (!isDragging) return;
-            const deltaY = startY - e.clientY;
-            const deltaValue = (deltaY / 100) * 100; // 100px movement = full range
-            setVolume(startValue + deltaValue);
-        }
-
-        function handleDragEnd() {
-            isDragging = false;
-            document.removeEventListener('mousemove', handleDrag);
-            document.removeEventListener('mouseup', handleDragEnd);
-        }
-
-        knob.addEventListener('mousedown', (e) => {
-            handleClick(e);
-            handleDragStart(e);
-        });
-
-        // Initialize knob position
-        setVolume(parseFloat(knob.value) || 100);
+        const padId = knob.id.replace('volume-', '');
+        padVolumes[padId] = 1; // Default volume
+        setupKnobBehavior(knob, updateVolume);
     });
 }
+
+function setupPitchKnobs() {
+    const pitchKnobs = document.querySelectorAll('.pitch-knob');
+    pitchKnobs.forEach(knob => {
+        const padId = knob.id.replace('pitch-', '');
+        padPitches[padId] = 1; // Default pitch (no change)
+        knob.value = 50; // Set to middle position
+        setupPitchPanKnobBehavior(knob, updatePitch);
+    });
+}
+
+function setupPanKnobs() {
+    const panKnobs = document.querySelectorAll('.pan-knob');
+    panKnobs.forEach(knob => {
+        const padId = knob.id.replace('pan-', '');
+        padPans[padId] = 0; // Default pan (center)
+        knob.value = 50; // Set to middle position
+        setupPitchPanKnobBehavior(knob, updatePan);
+    });
+}
+
+function setupPitchPanKnobBehavior(knob, updateFunction) {
+    const indicator = knob.nextElementSibling;
+    let isDragging = false;
+    let hasDragged = false;
+    let startY, startValue, currentValue;
+
+    function setKnobValue(newValue) {
+        newValue = Math.min(100, Math.max(0, newValue));
+        knob.value = newValue;
+        currentValue = newValue;
+        updateFunction(knob);
+        
+        const rotation = (newValue - 50) * 2.7 + 45; // -135 to 135 degrees
+        indicator.style.transform = `rotate(${rotation}deg)`;
+        
+        console.log(`Setting knob value: ${newValue}`);
+    }
+
+    function handleDragStart(e) {
+        isDragging = true;
+        hasDragged = false;
+        startY = e.clientY;
+        startValue = parseFloat(knob.value);
+        currentValue = startValue;
+        
+        console.log(`Drag start - startY: ${startY}, startValue: ${startValue}, knob.value: ${knob.value}`);
+        
+        document.addEventListener('mousemove', handleDrag);
+        document.addEventListener('mouseup', handleDragEnd);
+    }
+
+    function handleDrag(e) {
+        if (!isDragging) return;
+        hasDragged = true;
+        const currentY = e.clientY;
+        const deltaY = startY - currentY;
+        const sensitivity = 2;
+        
+        const newValue = startValue + (deltaY * sensitivity);
+        currentValue = Math.min(100, Math.max(0, newValue));
+        
+        console.log(`Drag - deltaY: ${deltaY}, newValue: ${currentValue}, startValue: ${startValue}`);
+        
+        setKnobValue(currentValue);
+    }
+
+    function handleDragEnd() {
+        isDragging = false;
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('mouseup', handleDragEnd);
+        
+        // Ensure we're using the last known good value
+        setKnobValue(currentValue);
+        
+        console.log(`Drag end - final value: ${currentValue}, knob.value: ${knob.value}`);
+    }
+
+    function handleClick(e) {
+        if (!hasDragged) {
+            setKnobValue(50);
+        }
+        hasDragged = false;
+    }
+
+    knob.addEventListener('mousedown', handleDragStart);
+    knob.addEventListener('click', handleClick);
+
+    // Initialize knob position
+    setKnobValue(parseFloat(knob.value) || 50);
+    console.log(`Knob initialized with value: ${knob.value}`);
+}
+
+
+function setupKnobBehavior(knob, updateFunction) {
+    const indicator = knob.nextElementSibling;
+    let isDragging = false;
+    let startY, startValue;
+
+    function setKnobValue(newValue) {
+        newValue = Math.min(100, Math.max(0, newValue));
+        knob.value = newValue;
+        updateFunction(knob);
+        
+        const rotation = (newValue / 100) * 270 - 135;
+        indicator.style.transform = `rotate(${rotation}deg)`;
+    }
+
+    function handleClick(e) {
+        const knobRect = knob.getBoundingClientRect();
+        const knobCenter = {
+            x: knobRect.left + knobRect.width / 2,
+            y: knobRect.top + knobRect.height / 2
+        };
+        const clickPos = {
+            x: e.clientX,
+            y: e.clientY
+        };
+        
+        let angle = Math.atan2(clickPos.y - knobCenter.y, clickPos.x - knobCenter.x);
+        angle = (angle + Math.PI * 6/4) % (Math.PI * 2);
+        
+        let newValue = (angle / (Math.PI * 3/2)) * 100;
+        setKnobValue(newValue);
+    }
+
+    function handleDragStart(e) {
+        isDragging = true;
+        startY = e.clientY;
+        startValue = parseFloat(knob.value);
+        document.addEventListener('mousemove', handleDrag);
+        document.addEventListener('mouseup', handleDragEnd);
+    }
+
+    function handleDrag(e) {
+        if (!isDragging) return;
+        hasDragged = true;
+        const currentY = e.clientY;
+        const deltaY = startY - currentY;
+        const sensitivity = 2;
+        
+        const newValue = startValue + (deltaY * sensitivity);
+        currentValue = Math.min(100, Math.max(0, newValue));
+        
+        console.log(`Drag - deltaY: ${deltaY}, newValue: ${currentValue}, startValue: ${startValue}`);
+        
+        setKnobValue(currentValue);
+    }
+
+    function handleDragEnd() {
+        isDragging = false;
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('mouseup', handleDragEnd);
+    }
+
+    knob.addEventListener('mousedown', (e) => {
+        handleClick(e);
+        handleDragStart(e);
+    });
+
+    // Initialize knob position
+    setKnobValue(parseFloat(knob.value) || 50);
+}
+
+function updateVolume(knob) {
+    const padId = knob.id.replace('volume-', '');
+    const volume = Math.max(0.0001, knob.value / 100);
+    padVolumes[padId] = volume;
+}
+
+function updatePitch(knob) {
+    const padId = knob.id.replace('pitch-', '');
+    const pitchValue = (knob.value - 50) / 50; // -1 to 1 range
+    padPitches[padId] = Math.pow(2, pitchValue); // Convert to pitch multiplier
+}
+
+function updatePan(knob) {
+    const padId = knob.id.replace('pan-', '');
+    const panValue = (knob.value - 50) / 50; // -1 to 1 range
+    padPans[padId] = panValue;
+}
+
 
 async function setupDrumMachine() {
     await loadSamples();
@@ -569,6 +724,8 @@ async function setupDrumMachine() {
     }
 
     setupVolumeKnobs();
+    setupPitchKnobs();
+    setupPanKnobs();
 
     // Add event listeners to drum pads
     for (let i = 0; i < pads.length; i++) {
@@ -614,23 +771,6 @@ async function setInitialPadSounds() {
     await Promise.all(preloadPromises);
     console.log('All initial pad sounds preloaded');
 }
-
-async function preloadAudio(audioPath) {
-    return new Promise((resolve, reject) => {
-        const audio = new Audio(audioPath);
-        audio.addEventListener('canplaythrough', () => {
-            preloadedAudio[audioPath] = audio;
-            resolve();
-        }, { once: true });
-        audio.addEventListener('error', (error) => {
-            console.error(`Error preloading audio ${audioPath}:`, error);
-            reject(error);
-        });
-    });
-}
-
-
-
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM content loaded, initializing drum machine...');
@@ -679,4 +819,3 @@ function setInitialPadSound(pad) {
 }
 
 window.addEventListener('load', setupDrumMachine);
-
