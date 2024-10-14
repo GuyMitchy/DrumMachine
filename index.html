@@ -13,7 +13,8 @@
 <body class="container py-5 mt-5">
     <div class="row mb-4">
         <div class="col-12 drum-column">
-            <button id="change-sounds-btn">Switch Samples</button>
+            <button id="change-sounds-btn"><img src="./assets/images/noun-edit-7290577.svg" alt="edit-icon"
+                    class="edit-icon"></button>
             <div class="drum-machine">
                 <button class="pad" id="pad1" data-sound-list="./samples/fx_list.json"
                     data-color="#ff6b6b">Cowbell</button>
@@ -38,12 +39,15 @@
     </div>
 
     <div class="row">
-        <div class="col-12">
+        <div class="col-9">
             <div class="sequencer-container">
 
                 <!-- Pitch KNOBS -->
 
+
+
                 <div class="pitch-knobs">
+                    <img src="./assets/images/noun-music-note-1801224.svg" alt="pan-knobs" class="pitch-icon">
                     <div class="pitch-knob-container">
                         <input type="range" min="0" max="100" value="100" class="pitch-knob" id="pitch-pad3">
                         <div class="knob-indicator"></div>
@@ -68,7 +72,7 @@
                         <input type="range" min="0" max="100" value="100" class="pitch-knob" id="pitch-pad4">
                         <div class="knob-indicator"></div>
                     </div>
-                    <div class="pitch-knob-container">  
+                    <div class="pitch-knob-container">
                         <input type="range" min="0" max="100" value="100" class="pitch-knob" id="pitch-pad9">
                         <div class="knob-indicator"></div>
                     </div>
@@ -81,12 +85,14 @@
                         <div class="knob-indicator"></div>
                     </div>
                 </div>
-                
+
 
                 <!-- PAN KNOBS -->
 
                 <div class="pan-knobs">
+                    <img src="./assets/images/noun-pan-left-right-2953145.svg" alt="pan-knobs" class="pan-icon">
                     <div class="pan-knob-container">
+
                         <input type="range" min="0" max="100" value="100" class="pan-knob" id="pan-pad3">
                         <div class="knob-indicator"></div>
                     </div>
@@ -123,10 +129,11 @@
                         <div class="knob-indicator"></div>
                     </div>
                 </div>
-                
+
 
                 <!-- VOLUME KNOBS -->
                 <div class="volume-knobs">
+                    <img src="./assets/images/noun-volume-6960436.svg" alt="pan-knobs" class="volume-icon">
                     <div class="knob-container">
                         <input type="range" min="0" max="100" value="100" class="volume-knob" id="volume-pad3">
                         <div class="knob-indicator"></div>
@@ -165,35 +172,63 @@
                     </div>
                 </div>
                 <div class="row-labels"></div>
-                
-                    
+
+
                 <div class="sequencer">
                     <div class="grid-controls">
-                        <div class="grid-selector-label">Edit Grid</div>
+
+                        
+
+                           
+                            <button id="play-button"><img src="./assets/images/noun-play-4896138.svg" alt="play-icon" class="play-icon"></button>
+                            <button id="stop-button"><img src="./assets/images/noun-stop-2713350.svg" alt="stop-icon" class="stop-icon"></button>
+    
+    
+    
+                     
+                        <img src="./assets/images/noun-grid-7164352.svg" alt="grid-icon" class="grid-icon">
                         <button class="grid-selector" data-grid="0">1</button>
                         <button class="grid-selector" data-grid="1">2</button>
                         <button class="grid-selector" data-grid="2">3</button>
                         <button class="grid-selector" data-grid="3">4</button>
-                    </div>
 
-                    <div class="grid-toggles">
-                        <label class="grid-toggle-label">
-                            <div class="activate-label">Activate Grid</div>
-                            <input type="checkbox" class="grid-toggle" data-grid="0" checked>
-                            <span class="grid-toggle-button">1</span>
-                        </label>
-                        <label class="grid-toggle-label">
-                            <input type="checkbox" class="grid-toggle" data-grid="1">
-                            <span class="grid-toggle-button">2</span>
-                        </label>
-                        <label class="grid-toggle-label">
-                            <input type="checkbox" class="grid-toggle" data-grid="2">
-                            <span class="grid-toggle-button">3</span>
-                        </label>
-                        <label class="grid-toggle-label">
-                            <input type="checkbox" class="grid-toggle" data-grid="3">
-                            <span class="grid-toggle-button">4</span>
-                        </label>
+
+
+
+
+                        <div class="grid-toggle-container">
+                            <img src="./assets/images/noun-grid-7164352.svg" alt="grid-icon" class="active-grid-icon">
+                            <div class="grid-toggle-buttons">
+                                <label class="grid-toggle-label">
+                                    <input type="checkbox" class="grid-toggle" data-grid="0" checked>
+                                    <span class="grid-toggle-button">1</span>
+                                </label>
+                                <label class="grid-toggle-label">
+                                    <input type="checkbox" class="grid-toggle" data-grid="1">
+                                    <span class="grid-toggle-button">2</span>
+                                </label>
+                                <label class="grid-toggle-label">
+                                    <input type="checkbox" class="grid-toggle" data-grid="2">
+                                    <span class="grid-toggle-button">3</span>
+                                </label>
+                                <label class="grid-toggle-label">
+                                    <input type="checkbox" class="grid-toggle" data-grid="3">
+                                    <span class="grid-toggle-button">4</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="tempo-control">
+                            <button id="tempo-decrease" aria-label="Decrease tempo">
+                                <img src="assets/images/minus-sign.svg" alt="Decrease" width="20" height="20">
+                            </button>
+                            <span id="tempo-display">120</span>
+                            <button id="tempo-increase" aria-label="Increase tempo">
+                                <img src="assets/images/plus-sign.svg" alt="Increase" width="20" height="20">
+                            </button>
+                        </div>
+                        <button id="clear-grid-btn" class="clear-btn"><img src="./assets/images/noun-trash-4671009.svg" alt="trash-icon" class="trash-icon"></button>
+
                     </div>
                     <div class="sequence-grids">
                         <div class="sequence-grid" id="grid-0"></div>
@@ -201,23 +236,12 @@
                         <div class="sequence-grid" id="grid-2"></div>
                         <div class="sequence-grid" id="grid-3"></div>
                     </div>
-                    <div class="playback-controls">
-                        <div class="tempo-control">
-                            <label for="tempo-slider" class="tempo-label">Tempo: <span id="tempo-display">120</span> BPM</label>
-                            <input type="range" id="tempo-slider" min="60" max="240" value="120" class="styled-slider">
-                        </div>
-                        <button id="clear-grid-btn" class="control-btn">Clear Grid</button>
-                        <button id="play-button">Play</button>
-                        <button id="stop-button">Stop</button>
-                        
-                        
-                        
-                    </div>
                     
-                    </div>
+
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <script src="./assets/scripts/script.js"></script>

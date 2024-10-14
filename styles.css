@@ -88,12 +88,69 @@ body {
     background-color: #45b7d1;
 }
 
+/* ICONS */
+
+.pan-icon {
+    height: 15px;
+    margin-bottom: 4px;
+    
+}
+
+.pitch-icon {
+    height: 15px;
+    margin-bottom: 4px;
+}
+
+.volume-icon {
+    height: 15px;
+    margin-bottom: 4px;
+    padding-right: 4px;
+    
+}
+
+.grid-icon {
+    height: 35px;
+    margin-top:10px;
+    margin-left: 20px;
+    
+    
+}
+
+.active-grid-icon {
+    height: 35px;
+    margin-left: 20px;
+    margin-top: 5px;
+   
+}
+
+.trash-icon {
+    height:20px
+    
+}
+
+.play-icon {
+    height: 18px;
+    margin-bottom: 5px;
+    
+}
+
+.stop-icon {
+    height: 18px;
+    margin-bottom: 5px;
+    
+}
+
+
+
+
+
+
 /* SEQUENCER */
 
 .sequencer {
    
     margin-left: 10px;
-    margin-top: 20px;
+    margin-top: 57px;
     flex-grow: 1;
 }
 
@@ -103,49 +160,37 @@ body {
     align-items: flex-start; /* Align items to the top */
 }
 
-.grid-controls, .grid-toggles {
+.grid-controls{
     display: flex;
     justify-content: flex-start;
     margin-bottom: 10px;
+    margin-top: 20px;
+    background-color: #fbdeb3;
+    border-radius: 5px;
+}
+
+.grid-toggles {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
 }
 
 .grid-selector {
-    background-color: #333;
-    color: white;
+    color: rgb(0, 0, 0);
     border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    margin-right: 10px;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.1s ease;
-}
-
-.grid-selector-label {
-    background-color:  #4ecdc4;
-    color: white;
-    border: none;
+    height: 30px;
+    margin-top: 10px;
     border-radius: 5px;
-    padding: 10px 15px;
-    margin-right: 10px;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.activate-label {
-    background-color:  #45b7d1;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    margin-right: 10px;
-    font-size: 14px;
-    font-weight: bold;
 }
 
 .grid-selector:hover {
-    background-color: #444;
+    background-color: #ffd392fe;
 }
 
 .grid-selector:active {
@@ -153,45 +198,66 @@ body {
 }
 
 .grid-selector.active {
-    background-color: #4ecdc4; /* Change this to your preferred active color */
-    color: #333; /* Optional: change text color for better contrast */
-}
-
-.grid-toggles label {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 15px;
-    font-size: 14px;
+    background-color: #ffd392fe;
     color: #333;
 }
 
-.grid-toggles input[type="checkbox"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #333;
-    border-radius: 3px;
-    margin-right: 5px;
+.grid-toggle-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-toggle-label {
+    margin: 0;
+}
+
+.grid-toggle {
+    display: none;
+}
+
+.grid-toggle-button {
+    display: inline-block;
+    background-color: #f0f0f0;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: bold;
     cursor: pointer;
-    position: relative;
     transition: all 0.1s ease;
+   
+    height: 30px;
+    width: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.grid-toggles input[type="checkbox"]:checked {
-    background-color: #4ecdc4;
-    border-color: #4ecdc4;
+.grid-toggle-label:not(:last-child) .grid-toggle-button {
+    border-right: 1px solid #ccc;
 }
 
-.grid-toggles input[type="checkbox"]:checked::after {
-    content: '✓';
-    position: absolute;
-    color: white;
-    font-size: 14px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.grid-toggle-label:first-of-type .grid-toggle-button {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.grid-toggle-label:last-of-type .grid-toggle-button {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.grid-toggle-button:hover {
+    background-color: #ffcb7efe;
+}
+
+.grid-toggle:checked + .grid-toggle-button {
+    background-color: #ffcb7efe;
+    color: #000000;
+    position: relative;
+    z-index: 1;
 }
 
 .sequence-grids {
@@ -258,38 +324,39 @@ body {
 } */
 
 #play-button, #stop-button {
-    background-color: #333;
-    color: white;
+    background-color: transparent;
     border: none;
     border-radius: 5px;
-    padding: 5px 10px;
-    margin: 0 10px;
-    font-size: 16px;
-    font-weight: bold;
+    padding: 5px;
+    margin: 10px 0 0 10px;
+
+    height: 30px;
+    width: 30px;
     cursor: pointer;
-    transition: all 0.1s ease;
+    transition: all 0.3s ease;
+    
+
 }
 
-#play-button:hover, #stop-button:hover {
-    background-color: #444;
-}
 
-#play-button:active, #stop-button:active {
-    transform: scale(0.95);
-}
-
-#play-button {
+#play-button:hover {
     background-color: #4ecdc4;
+    transition: all 0.3s ease;
 }
 
-#stop-button {
+#stop-button:hover {
     background-color: #ff6b6b;
+    transition: all 0.3s ease;
 }
+
+#play-button, #stop-button {
+    background-color: #fbdeb3;
+}
+
+
 
 /* Container for controls */
-.grid-controls, .grid-toggles, .playback-controls {
-    margin-bottom: 20px;
-}
+
 
 
 
@@ -301,7 +368,14 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+ 
     transition: background-color 0.3s;
+}
+
+#change-sounds-btn img {
+    width: 20px;  /* Adjust this value as needed */
+    height: 20px; /* Adjust this value as needed */
+    margin-right: 5px; /* Adds some space between the icon and text if there's any */
 }
 
 #change-sounds-btn:hover {
@@ -316,40 +390,7 @@ body {
     border: 2px solid #ff0000; /* Red border for the current step */
 }
 
-.grid-toggles {
-    margin-bottom: 10px;
-}
 
-.grid-toggle-label {
-    display: inline-block;
-    margin-right: 10px;
-}
-
-.grid-toggle {
-    display: none; /* Hide the actual checkbox */
-}
-
-.grid-toggle-button {
-    display: inline-block;
-    background-color: #555; /* Slightly lighter than the grid selectors */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 12px; /* Slightly smaller than grid selectors */
-    font-size: 12px; /* Slightly smaller than grid selectors */
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.1s ease;
-}
-
-.grid-toggle-button:hover {
-    background-color: #666;
-}
-
-.grid-toggle:checked + .grid-toggle-button {
-    background-color: #45b7d1; /* Different color than grid selectors when active */
-    color: #333;
-}
 
 .sequencer-container {
     display: flex;
@@ -434,7 +475,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-left: 8px;
-    margin-top: 129px;
+    margin-top: 110px;
     
     
 }
@@ -469,7 +510,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-left: 8px;
-    margin-top: 129px;
+    margin-top: 110px;
     
     
 }
@@ -505,7 +546,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-left: 8px;
-    margin-top: 129px;
+    margin-top: 110px;
     
     
 }
@@ -559,89 +600,71 @@ body {
 }
 /* CLEAR GRID BUTTON */
 
-.control-btn {
+.clear-btn {
     background-color: #fdb56d;
     color: white;
     border: none;
     border-radius: 5px;
     padding: 10px 15px;
-    margin-left: 470px;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.control-btn:hover {
+.clear-btn img {
+    width: 20px;  /* Adjust this value as needed */
+    height: 20px; /* Adjust this value as needed */
+    margin-right: 5px; /* Adds some space between the icon and text */
+    fill: currentColor; /* This will make the icon color match the text color */
+}
+
+.clear-btn:hover {
     background-color: #d32f2f;
 }
 
-.control-btn:active {
+.clear-btn:active {
     transform: scale(0.95);
 }
 
 /* TEMPO SLIDER */
 
-.tempo-control {
+#tempo-control {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
-}
-
-.tempo-label {
-    background-color: #fbdeb3fe;
-    color: rgb(0, 0, 0);
+    justify-content: center;
+    margin: 10px 0;
+  }
+  
+  #tempo-control button {
+    background: none;
     border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    margin-right: 10px;
-   
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #tempo-control button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  #tempo-control button:active {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  #tempo-display {
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
+    font-weight: bold;
+    
    
-}
-
-.styled-slider {
-    -webkit-appearance: none;
-    width: 200px;
-    height: 10px;
-    background: #ffffff;
-    outline: none;
-    border-radius: 5px;
-}
-
-.styled-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #000000fe;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-.styled-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: #fbdeb3fe;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-.styled-slider:hover::-webkit-slider-thumb {
-    background: #fbdeb3fe;
-}
-
-.styled-slider:hover::-moz-range-thumb {
-    background: #45b7d1;
-}
-
-.styled-slider:active::-webkit-slider-thumb {
-    transform: scale(0.95);
-}
-
-.styled-slider:active::-moz-range-thumb {
-    transform: scale(0.95);
-}
+    text-align: center;
+  }
 
 /* Unified styling for all knob types (volume, pitch, pan) for each pad */
 [id$="-pad1"] + .knob-indicator { --knob-color: #5c7cfa; }

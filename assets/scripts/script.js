@@ -1,4 +1,4 @@
-const numSteps = 32;  // Number of steps in our sequence
+const numSteps = 32;  
 const numGrids = 4;
 let sequences = Array(numGrids).fill().map(() => Array(9).fill().map(() => Array(numSteps).fill(false)));
 let activeGrids = [true, false, false, false];
@@ -7,8 +7,9 @@ let isPlaying = false;
 let currentStep = 0;
 let intervalId = null;
 let activeGridIndex = 0;
-let currentTempo = 120; // Default tempo in BPM
+let currentTempo = 120; 
 
+// STYLING 
 const padColors = {
     'pad1': '#5c7cfa',
     'pad2': '#ffa94d',
@@ -21,7 +22,7 @@ const padColors = {
     'pad9': '#45b7d1'
 };
 
-// Add these new variables
+
 let isChangingSounds = false;
 let samples = {};
 let preloadedAudio = {};
@@ -31,13 +32,14 @@ const padPitches = {};
 const padPans = {};
 
 
-// Add this variable at the top of your script file
+
 const padCurrentIndex = {}
 
-// Add this at the top of your file
+
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-// Add this function to load samples
+// SAMPLES FUNCTIONS
+
 async function loadSamples() {
     const response = await fetch('./samples/sample_list.json');
     samples = await response.json();
@@ -81,8 +83,44 @@ async function preloadAudio(audioPath) {
     });
 }
 
+// TEMPO FUNCTIONS
+
 function calculateIntervalFromBPM(bpm) {
     return 60000 / bpm / 4; // Assuming 16th notes (4 steps per beat)
+}
+
+function setupTempoControl() {
+    const decreaseButton = document.getElementById('tempo-decrease');
+    const increaseButton = document.getElementById('tempo-increase');
+    const tempoDisplay = document.getElementById('tempo-display');
+
+    if (!decreaseButton || !increaseButton || !tempoDisplay) {
+        console.error('Tempo control elements not found');
+        return;
+    }
+
+    function handleTempoChange(change) {
+        const newTempo = Math.max(60, Math.min(200, currentTempo + change));
+        updateTempo(newTempo);
+    }
+
+    decreaseButton.addEventListener('click', () => handleTempoChange(-1));
+    increaseButton.addEventListener('click', () => handleTempoChange(1));
+
+    // Initialize display
+    updateTempo(currentTempo);
+}
+
+function updateTempo(newTempo) {
+    currentTempo = newTempo;
+    const tempoDisplay = document.getElementById('tempo-display');
+    if (tempoDisplay) {
+        tempoDisplay.textContent = currentTempo;
+    }
+    if (isPlaying) {
+        stopSequence();
+        startSequence();
+    }
 }
 
 function updateTempo(newTempo) {
@@ -164,6 +202,8 @@ async function playSound(input, isSequencerTrigger = false) {
         // Optionally, you could add a fallback method here to load and play the sound
     }
 }
+
+
 
 // Add this function to change pad sound
 async function changePadSound(pad) {
@@ -471,10 +511,7 @@ function setupEventListeners() {
     const clearGridBtn = document.getElementById('clear-grid-btn');
     clearGridBtn.addEventListener('click', clearCurrentGrid);
 
-       const tempoSlider = document.getElementById('tempo-slider');
-    tempoSlider.addEventListener('input', (e) => {
-        updateTempo(parseInt(e.target.value));
-    });
+      
 }
 
 
@@ -726,6 +763,7 @@ async function setupDrumMachine() {
     setupVolumeKnobs();
     setupPitchKnobs();
     setupPanKnobs();
+    setupTempoControl(); // Add this line
 
     // Add event listeners to drum pads
     for (let i = 0; i < pads.length; i++) {
